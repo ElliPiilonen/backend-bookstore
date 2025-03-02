@@ -9,6 +9,8 @@ import bookstore.bookstore.domain.Book;
 import bookstore.bookstore.domain.BookRepository;
 import bookstore.bookstore.domain.Category;
 import bookstore.bookstore.domain.CategoryRepository;
+import bookstore.bookstore.domain.User;
+import bookstore.bookstore.domain.UserRepository;
 
 @SpringBootApplication
 public class BookstoreApplication {
@@ -18,7 +20,8 @@ public class BookstoreApplication {
 	}
 
 	@Bean
-	public CommandLineRunner books(CategoryRepository crepository, BookRepository repository) {
+	public CommandLineRunner books(CategoryRepository crepository, BookRepository repository,
+			UserRepository urepository) {
 		return (args) -> {
 
 			Category novel = new Category("Novel");
@@ -36,6 +39,15 @@ public class BookstoreApplication {
 			repository.save(b1);
 			repository.save(b2);
 			repository.save(b3);
+
+			// USER1 password123
+			// USER2 kissa123
+
+			User user1 = new User("user", "$2a$12$nZeyF8xDd6xjuQiXRco5o.XWqFgD0tGzhuehbdJ2qVngz4BphgN3a", "USER");
+			User user2 = new User("admin", "$2a$12$xOuwfiF75nNldZUidThzi.fUrv6gdD4nyTg6EXuS1YocnqSHWv5/i", "ADMIN");
+
+			urepository.save(user1);
+			urepository.save(user2);
 
 		};
 	}

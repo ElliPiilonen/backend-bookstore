@@ -3,13 +3,16 @@ package bookstore.bookstore.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -28,24 +31,14 @@ public class WebSecurityConfig {
                 return http.build();
         }
 
-        @Bean
-        public UserDetailsService UserDetailsService() {
-                UserDetails user = User.withDefaultPasswordEncoder()
-                                .username("user")
-                                .password("password")
-                                .roles("USER")
-                                .build();
-                List<UserDetails> users = new ArrayList<>();
-                users.add(user);
+        private UserDetailsService userDetailsService;
 
-                UserDetails admin = User.withDefaultPasswordEncoder()
-                                .username("admin")
-                                .password("password")
-                                .roles("ADMIN")
-                                .build();
-                users.add(admin);
-                return new InMemoryUserDetailsManager(users);
-
+        public WebSecurityConfig(UserDetailsService userDetailsService) {
+                this.userDetailsService = userDetailsService;
         }
 
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+                auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+        }
 }
